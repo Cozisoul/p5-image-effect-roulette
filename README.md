@@ -8,12 +8,11 @@ An interactive web application built with P5.js that allows users to upload an i
 
 ### [✨ Live Demo ✨](https://github.com/Cozisoul/p5-image-effect-roulette/)
 
-## Screenshot
+## Iage examples
 
-<!-- Add a screenshot or GIF of the application in action here! -->
-<!-- A great tool for creating animated GIFs is LiceCap or ScreenToGif. -->
-
-*(This is a placeholder image. Replace it with a screenshot of your actual project!)*
+![VHS Glitch Effect Example](visuals/vhs.png)
+![Bitmap Example](visuals/bitmap.png)
+![Pixel Glitch](visuals/pixel-glitch.png)
 
 
 ## Features
