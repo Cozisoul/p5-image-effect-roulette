@@ -6,7 +6,7 @@ An interactive web application built with P5.js that allows users to upload an i
 
 ---
 
-### [✨ Live Demo ✨](https://github.com/Cozisoul/p5-image-effect-roulette/)
+### [✨ Live Demo ✨](https://cozisoul.github.io/p5-image-effect-roulette/)
 
 ## Image examples
 
