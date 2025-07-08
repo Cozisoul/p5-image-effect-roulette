@@ -11,9 +11,19 @@ let processedImage;
 let fileInput;
 let processButton;
 let downloadButton;
+let effectNameDisplay;
+let processingStatusDisplay;
 
 // The maximum width of our on-screen canvas container.
 const MAX_CANVAS_WIDTH = 1000;
+
+// Map function names to user-friendly names
+const effectDisplayNameMap = {
+  [applyDithering.name]: "Halftone Dots",
+  [applyIntenseVhsGlitch.name]: "Intense VHS Glitch",
+  [applyPixelSampler.name]: "Pixel Sampler",
+  [applyPixelSorting.name]: "Pixel Sorting"
+};
 
 function setup() {
   const canvas = createCanvas(MAX_CANVAS_WIDTH, 500);
@@ -34,6 +44,9 @@ function setup() {
   downloadButton.parent(uiContainer);
   downloadButton.mousePressed(downloadResult);
   downloadButton.attribute('disabled', '');
+
+  effectNameDisplay = select('#effect-name-display');
+  processingStatusDisplay = select('#processing-status');
 
   drawInitialCanvas();
 }
@@ -75,7 +88,8 @@ function drawPreviews() {
 }
 
 function handleFile(file) {
-  if (file.type === 'image') {
+  if (file.type && file.type.startsWith('image/')) {
+    processingStatusDisplay.html(''); // Clear any previous error messages
     loadImage(file.data, img => {
       // --- HIGH-RESOLUTION PREPARATION ---
       // 1. Calculate the aspect ratio from the user's original upload.
@@ -94,28 +108,59 @@ function handleFile(file) {
       processedImage = null;
       processButton.removeAttribute('disabled');
       downloadButton.attribute('disabled', '');
+      effectNameDisplay.html(''); // Clear effect name on new image upload
+      processingStatusDisplay.html(''); // Clear any status message
       
       // Draw the new previews
       drawPreviews();
     });
+  } else {
+    // Handle non-image file
+    processingStatusDisplay.html('Error: Please upload a valid image file.');
+    // Reset UI elements if needed
+    fileInput.value(''); // Clear the file input
+    // Optionally, clear canvas or show initial message
+    // drawInitialCanvas();
+    // Disable process/download buttons if they were somehow enabled
+    processButton.attribute('disabled', '');
+    downloadButton.attribute('disabled', '');
+    effectNameDisplay.html('');
   }
 }
 
 function applyRandomEffect() {
   if (!sourceImage) return;
 
-  const effects = [
-    applyDithering,
-    applyIntenseVhsGlitch,
-    applyPixelSampler
-  ];
-  
-  let randomEffect = random(effects);
-  // The effect is run on the high-resolution sourceImage
-  processedImage = randomEffect(sourceImage);
-  
-  downloadButton.removeAttribute('disabled');
-  drawPreviews();
+  // Disable buttons and show processing message
+  processButton.attribute('disabled', '');
+  downloadButton.attribute('disabled', '');
+  processingStatusDisplay.html('Processing...');
+  effectNameDisplay.html(''); // Clear previous effect name
+
+  // Delay processing slightly to allow the UI to update
+  // This ensures the "Processing..." message is rendered before heavy work starts.
+  setTimeout(() => {
+    const effects = [
+      applyDithering,
+      applyIntenseVhsGlitch,
+      applyPixelSampler,
+      applyPixelSorting
+    ];
+
+    let chosenEffectFunction = random(effects);
+
+    // The effect is run on the high-resolution sourceImage
+    processedImage = chosenEffectFunction(sourceImage);
+
+    // Update UI
+    const effectName = effectDisplayNameMap[chosenEffectFunction.name] || "Unknown Effect";
+    effectNameDisplay.html(`Applied Effect: ${effectName}`);
+    processingStatusDisplay.html(''); // Clear processing message
+    downloadButton.removeAttribute('disabled');
+    processButton.removeAttribute('disabled'); // Re-enable after processing
+
+    drawPreviews();
+  }, 50); // 50ms delay
 }
 
 function downloadResult() {
@@ -150,6 +195,45 @@ function applyDithering(img) {
       resultImg.pixels[index + 1] = newColor;
       resultImg.pixels[index + 2] = newColor;
       resultImg.pixels[index + 3] = 255;
+    }
+  }
+  resultImg.updatePixels();
+  return resultImg;
+}
+
+/**
+ * EFFECT 4: Pixel Sorting
+ * Sorts pixels in each row by brightness.
+ */
+function applyPixelSorting(img) {
+  let resultImg = createImage(img.width, img.height);
+  img.loadPixels();
+  resultImg.loadPixels();
+
+  for (let y = 0; y < img.height; y++) {
+    let rowPixels = [];
+    // Extract pixels for the current row
+    for (let x = 0; x < img.width; x++) {
+      let index = (y * img.width + x) * 4;
+      rowPixels.push({
+        r: img.pixels[index],
+        g: img.pixels[index + 1],
+        b: img.pixels[index + 2],
+        a: img.pixels[index + 3],
+        brightness: (img.pixels[index] + img.pixels[index + 1] + img.pixels[index + 2]) / 3
+      });
+    }
+
+    // Sort pixels by brightness
+    rowPixels.sort((a, b) => a.brightness - b.brightness);
+
+    // Place sorted pixels back into the result image
+    for (let x = 0; x < img.width; x++) {
+      let index = (y * img.width + x) * 4;
+      resultImg.pixels[index] = rowPixels[x].r;
+      resultImg.pixels[index + 1] = rowPixels[x].g;
+      resultImg.pixels[index + 2] = rowPixels[x].b;
+      resultImg.pixels[index + 3] = rowPixels[x].a;
     }
   }
   resultImg.updatePixels();
