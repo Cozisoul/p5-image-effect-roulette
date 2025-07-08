@@ -8,11 +8,11 @@ An interactive web application built with P5.js that allows users to upload an i
 
 ### [✨ Live Demo ✨](https://github.com/Cozisoul/p5-image-effect-roulette/)
 
-## Iage examples
+## Image examples
 
 ![VHS Glitch Effect Example](visuals/vhs.png)
 ![Bitmap Example](visuals/bitmap.png)
-![Pixel Glitch](visuals/pixel-glitch.png)
+![Pixel Glitch](visuals/pixel_glitch.png)
 
 
 ## Features
