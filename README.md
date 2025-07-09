@@ -39,9 +39,6 @@ Simulates a heavily distorted VHS tape. This effect is a combination of:
 ### 3. Pixel Sampler
 A chaotic collage effect. Instead of just swapping pixels, this algorithm takes thousands of random square chunks of various sizes from the source image and "pastes" them at random locations, creating a dense, textured, and abstract version of the original.
 
-### 4. Pixel Sorting
-This effect rearranges pixels in each row of the image based on their brightness. It typically creates horizontal "streaks" or "glitches," transforming the image into an abstract, often data-moshed, visual. The sorting can be based on various criteria (brightness, hue, saturation), but this implementation uses brightness.
-
 ## Built With
 
 *   [P5.js](https://p5js.org/) - The core JavaScript library for creative coding.

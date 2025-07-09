@@ -47,10 +47,3 @@ button:disabled {
   cursor: not-allowed;
   background-color: #222;
 }
-
-.effect-info {
-  margin-top: 10px;
-  font-size: 1em;
-  color: #aaa; /* Lighter than body text for subtlety */
-  min-height: 1.2em; /* Reserve space to prevent layout shifts */
-}
